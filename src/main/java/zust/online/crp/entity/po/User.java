@@ -3,6 +3,7 @@ package zust.online.crp.entity.po;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.hanzoy.utils.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

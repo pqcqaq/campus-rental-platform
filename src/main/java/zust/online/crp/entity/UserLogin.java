@@ -1,5 +1,6 @@
 package zust.online.crp.entity;
 
+import com.hanzoy.utils.Token;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,7 @@ public class UserLogin implements UserDetails {
     /**
      * 传入用户对象
      */
+    @Token
     private User user;
 
     /**

@@ -48,7 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         UserLogin user = (UserLogin) authenticate.getPrincipal();
         String token = jwtUtils.createToken(user);
         // 存入redis
-        redisTemplate.opsForValue().set(token, user,30, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(token, user, 30, TimeUnit.DAYS);
         //返回
         return Result.success("登录成功", token);
     }
