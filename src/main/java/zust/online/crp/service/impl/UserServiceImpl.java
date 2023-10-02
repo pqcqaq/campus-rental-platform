@@ -12,6 +12,7 @@ import zust.online.crp.entity.Result;
 import zust.online.crp.entity.UserLogin;
 import zust.online.crp.entity.dto.LoginParam;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.mapper.UserMapper;
 import zust.online.crp.service.UserService;
 
@@ -33,7 +34,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private RedisTemplate<String, UserLogin> redisTemplate;
 
     @Override
-    public Result<String> login(LoginParam loginParam) {
+    public Result<UserVo> login(LoginParam loginParam) {
         //进行用户认证。获取AuthenticationManager authenticate
         //获取认证对象
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginParam.getUsername(), loginParam.getPassword());
@@ -50,6 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 存入redis
         redisTemplate.opsForValue().set(token, user, 30, TimeUnit.DAYS);
         //返回
-        return Result.success("登录成功", token);
+        UserVo vo = user.toVo(token);
+        return Result.success("登录成功", vo);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.UserVo;
 
 import java.io.Serial;
 import java.util.ArrayList;
@@ -91,5 +92,16 @@ public class UserLogin implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public UserVo toVo(String token) {
+        UserVo userVo = new UserVo();
+        userVo.setUsername(user.getUsername());
+        userVo.setToken(token);
+        userVo.setMobile(user.getMobile());
+        userVo.setNickName(user.getNickName());
+        userVo.setSchool(user.getSchool());
+        userVo.setLinkMan(user.getLinkMan());
+        return userVo;
     }
 }

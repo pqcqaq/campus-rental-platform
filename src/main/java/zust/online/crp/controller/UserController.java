@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.dto.LoginParam;
+import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.service.UserService;
 
 import javax.annotation.Resource;
@@ -20,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Result<String> login(@RequestBody LoginParam loginParam){
+    public Result<UserVo> login(@RequestBody LoginParam loginParam){
         return userService.login(loginParam);
     }
 }

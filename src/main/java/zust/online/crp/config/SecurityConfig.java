@@ -27,6 +27,8 @@ import zust.online.crp.config.security.JwtAuthenticationFilter;
 import zust.online.crp.service.impl.UserDetailsServiceImpl;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * SpringSecurity 5.4.x以上新用法配置
@@ -114,6 +116,8 @@ public class SecurityConfig {
                         auth.antMatchers("/user/login").permitAll()
                                 .anyRequest().authenticated()
                 )
+                .cors().configurationSource(corsConfigurationSource())
+                .and()
                 .userDetailsService(userDetailsService)
                 .build();
     }
@@ -121,10 +125,32 @@ public class SecurityConfig {
     /**
      * 配置跨源访问(CORS)
      */
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+//        return source;
+//    }
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // 允许跨域的域名，可以用*表示允许任何域名使用，当证书为true时，不能设置为*，否则会报错
+        configuration.setAllowedOrigins(List.of("*"));
+        // 允许的方法
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        // 允许任何头
+        configuration.setAllowedHeaders(List.of("*"));
+        // 是否支持安全证书
+        configuration.setAllowCredentials(false);
+        // 允许的header
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "Content-Disposition"));
+        // 跨域允许时间
+        configuration.setMaxAge(3600L);
+
+        // 配置源对象
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
+        // 对所有URL应用CORS配置
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 
