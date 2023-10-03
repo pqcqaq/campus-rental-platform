@@ -97,18 +97,14 @@ public class CommonController {
 
     @GetMapping("/swiper")
     public Result<List<SwiperItemVo>> getSwiper() {
-        SwiperItemVo cat = SwiperItemVo.builder().img("https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg").text("小猫咪").build();
-        SwiperItemVo dog = SwiperItemVo.builder().img("https://fant-mini-plus.top/img/dog.jpg").text("修购").build();
-        SwiperItemVo apple = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
-        SwiperItemVo apple2 = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
-        SwiperItemVo apple3 = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
+        SwiperItemVo cat = SwiperItemVo.builder().img("https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg").text("小猫咪").postId(1L).build();
+        SwiperItemVo dog = SwiperItemVo.builder().img("https://fant-mini-plus.top/img/dog.jpg").text("修购").postId(2L).build();
+        SwiperItemVo apple = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").postId(3L).build();
 
         ArrayList<SwiperItemVo> swiperItemVos = new ArrayList<>();
         swiperItemVos.add(cat);
         swiperItemVos.add(dog);
         swiperItemVos.add(apple);
-        swiperItemVos.add(apple2);
-        swiperItemVos.add(apple3);
 
         return Result.success("获取成功", swiperItemVos);
     }
