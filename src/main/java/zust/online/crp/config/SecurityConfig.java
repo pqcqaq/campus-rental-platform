@@ -114,6 +114,7 @@ public class SecurityConfig {
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler)
                 .and().authorizeRequests(auth ->
                         auth.antMatchers("/user/login").permitAll()
+                                .antMatchers("/common/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors().configurationSource(corsConfigurationSource())

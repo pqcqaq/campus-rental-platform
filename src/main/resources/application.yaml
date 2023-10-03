@@ -15,3 +15,5 @@ token:
   sign: FF522206-CF91-E2BE-5762-2168F5202870
   time: 60*60*24*7
 debug: true
+
+avatarPath: "E:\\avatar\\"

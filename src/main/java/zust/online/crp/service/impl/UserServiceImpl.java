@@ -2,11 +2,14 @@ package zust.online.crp.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hanzoy.utils.JWTUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.UserLogin;
@@ -24,6 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @author qcqcqc
  */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired
@@ -53,5 +57,35 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //返回
         UserVo vo = user.toVo(token);
         return Result.success("登录成功", vo);
+    }
+
+    @Override
+    public UserVo alter(UserVo userVo) {
+        User user = userVo.toPo();
+        // 从上下文中取出用户信息
+        SecurityContext context = SecurityContextHolder.getContext();
+        User userLogin = (User) context.getAuthentication().getPrincipal();
+        Long id = userLogin.getId();
+        user.setId(id);
+        this.updateById(user);
+        //更新user
+        User byId = this.getById(id);
+        // 刷新redis
+        redisTemplate.delete(userVo.getToken());
+        String token = jwtUtils.createToken(byId);
+        UserLogin userLogin1 = new UserLogin(byId);
+        redisTemplate.opsForValue().set(token, userLogin1, 30, TimeUnit.DAYS);
+        return byId.toVo(token);
+    }
+
+    @Override
+    public String saveAlterAvatar(String avatar) {
+        // 从上下文中取出用户信息
+        SecurityContext context = SecurityContextHolder.getContext();
+        User userLogin = (User) context.getAuthentication().getPrincipal();
+        avatar = avatar.substring(1, avatar.length() - 1);
+        userLogin.setAvatar(avatar);
+        this.updateById(userLogin);
+        return "success";
     }
 }

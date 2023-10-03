@@ -17,4 +17,8 @@ public interface UserService extends IService<User> {
      * @return token
      */
     Result<UserVo> login(LoginParam loginParam);
+
+    UserVo alter(UserVo userVo);
+
+    String saveAlterAvatar(String avatar);
 }

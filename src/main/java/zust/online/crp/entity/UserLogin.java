@@ -97,11 +97,12 @@ public class UserLogin implements UserDetails {
     public UserVo toVo(String token) {
         UserVo userVo = new UserVo();
         userVo.setUsername(user.getUsername());
-        userVo.setToken(token);
-        userVo.setMobile(user.getMobile());
         userVo.setNickName(user.getNickName());
+        userVo.setAvatar(user.getAvatar());
+        userVo.setMobile(user.getMobile());
         userVo.setSchool(user.getSchool());
         userVo.setLinkMan(user.getLinkMan());
+        userVo.setToken(token);
         return userVo;
     }
 }

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import zust.online.crp.entity.vo.UserVo;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -27,10 +28,23 @@ public class User implements Serializable {
     private Long id;
     private String linkMan;
     private String username;
+    private String avatar;
     private String password;
     private String mobile;
     private String nickName;
     private String school;
     @TableField(value = "roles", typeHandler = JacksonTypeHandler.class)
     private List<String> roles;
+
+    public UserVo toVo(String token) {
+        return UserVo.builder()
+                .linkMan(linkMan)
+                .username(username)
+                .avatar(avatar)
+                .mobile(mobile)
+                .nickName(nickName)
+                .school(school)
+                .token(token)
+                .build();
+    }
 }
