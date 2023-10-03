@@ -2,7 +2,6 @@ package zust.online.crp.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +10,7 @@ import zust.online.crp.entity.Result;
 import zust.online.crp.entity.enums.ResultCode;
 import zust.online.crp.entity.po.Attachment;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.SwiperItemVo;
 import zust.online.crp.service.AttachmentService;
 
 import javax.annotation.Resource;
@@ -18,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author qcqcqc
@@ -91,5 +93,23 @@ public class CommonController {
             log.error("获取头像失败", e);
             response.setStatus(500);
         }
+    }
+
+    @GetMapping("/swiper")
+    public Result<List<SwiperItemVo>> getSwiper() {
+        SwiperItemVo cat = SwiperItemVo.builder().img("https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg").text("小猫咪").build();
+        SwiperItemVo dog = SwiperItemVo.builder().img("https://fant-mini-plus.top/img/dog.jpg").text("修购").build();
+        SwiperItemVo apple = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
+        SwiperItemVo apple2 = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
+        SwiperItemVo apple3 = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").build();
+
+        ArrayList<SwiperItemVo> swiperItemVos = new ArrayList<>();
+        swiperItemVos.add(cat);
+        swiperItemVos.add(dog);
+        swiperItemVos.add(apple);
+        swiperItemVos.add(apple2);
+        swiperItemVos.add(apple3);
+
+        return Result.success("获取成功", swiperItemVos);
     }
 }
