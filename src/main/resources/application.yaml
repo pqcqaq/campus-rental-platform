@@ -17,3 +17,10 @@ token:
 debug: true
 
 avatarPath: "E:\\avatar\\"
+
+#mybatis-plus:
+#  global-config:
+#    db-config:
+#      logic-delete-field: isDelete #默认deleted
+#      logic-delete-value: 1
+#      logic-not-delete-value: 0

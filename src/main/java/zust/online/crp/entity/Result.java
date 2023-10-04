@@ -31,6 +31,10 @@ public class Result<T> {
         return success(200, msg, null);
     }
 
+    public static <T> Result<T> success(T date) {
+        return success(200, "success", date);
+    }
+
     public static <T> Result<T> success(String msg, T data) {
         return success(200, msg, data);
     }

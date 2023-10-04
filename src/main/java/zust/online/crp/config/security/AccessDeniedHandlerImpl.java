@@ -19,9 +19,9 @@ import java.io.IOException;
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        response.setStatus(200);
+        response.setStatus(403);
         response.setContentType("application/json;charset=UTF-8");
-        String msg = "权限不足，无法访问系统资源";
+        String msg = "Insufficient permissions to access system resources";
         Result<String> error = Result.error(ResultCode.FORBIDDEN, msg, null);
         String s = new ObjectMapper().writeValueAsString(error);
         response.getWriter().println(s);

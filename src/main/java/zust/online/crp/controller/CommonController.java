@@ -53,13 +53,12 @@ public class CommonController {
      * 上传头像
      *
      * @param avatar 头像文件
-     * @param token  token
      * @return 结果
      */
     @PostMapping(value = "/avatar", headers = "content-type=multipart/form-data")
-    public Result<String> upload(MultipartFile avatar, @RequestPart String token) {
+    public Result<String> upload(MultipartFile avatar) {
         try {
-            Long l = attachmentService.saveAvater(avatar, token);
+            Long l = attachmentService.saveImgFile(avatar);
             return Result.success("上传成功", String.valueOf(l));
         } catch (Exception e) {
             log.error("上传失败", e);
@@ -74,23 +73,23 @@ public class CommonController {
      * @param response 响应
      *                 通过id获取头像
      */
-    @GetMapping("/avatar/{id}")
+    @GetMapping("/img/{id}")
     public void getAvatar(@PathVariable Long id, HttpServletResponse response) throws IOException {
         Attachment byId = attachmentService.getById(id);
         if (byId == null) {
             response.setStatus(404);
-            Result<String> error = Result.error(404, "avatar not found");
+            Result<String> error = Result.error(404, "img not found");
             new ObjectMapper().writeValue(response.getOutputStream(), error);
             return;
         }
         String serverPath = byId.getServerPath();
-        log.info("获取头像：{}", serverPath);
+        log.info("获取图片：{}", serverPath);
         // 将图片写出到浏览器
         try {
             response.setContentType("image/jpeg");
             response.getOutputStream().write(Files.readAllBytes(Paths.get(serverPath)));
         } catch (IOException e) {
-            log.error("获取头像失败", e);
+            log.error("获取图片失败", e);
             response.setStatus(500);
         }
     }

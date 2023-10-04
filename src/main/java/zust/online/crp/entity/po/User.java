@@ -1,9 +1,9 @@
 package zust.online.crp.entity.po;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.hanzoy.utils.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +12,7 @@ import zust.online.crp.entity.vo.UserVo;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,6 +36,8 @@ public class User implements Serializable {
     private String school;
     @TableField(value = "roles", typeHandler = JacksonTypeHandler.class)
     private List<String> roles;
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
 
     public UserVo toVo(String token) {
         return UserVo.builder()

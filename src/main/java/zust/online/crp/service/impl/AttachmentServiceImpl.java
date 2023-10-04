@@ -11,10 +11,12 @@ import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 import zust.online.crp.entity.UserLogin;
 import zust.online.crp.entity.po.Attachment;
+import zust.online.crp.entity.po.User;
 import zust.online.crp.exception.ErrorFoundUserException;
 import zust.online.crp.exception.ErrorSaveFileException;
 import zust.online.crp.mapper.AttachmentMapper;
 import zust.online.crp.service.AttachmentService;
+import zust.online.crp.utils.ContextUtil;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -22,6 +24,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -31,17 +35,14 @@ import java.util.UUID;
 @Slf4j
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachment> implements AttachmentService {
 
-    @Resource
-    private RedisTemplate<String, UserLogin> redisTemplate;
-
     @Value("${avatarPath}")
     private String avatarPath;
 
     @Override
-    public Long saveAvater(MultipartFile avatar, String token) {
+    public Long saveImgFile(MultipartFile avatar) {
+        // 从上下文取出token
         String originalFilename = avatar.getOriginalFilename();
         log.info("上传文件：{}", originalFilename);
-        log.info("信息：{}", token);
         //生成随机的uuid
         String uuid = UUID.randomUUID().toString();
         //获取文件后缀名
@@ -56,7 +57,21 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         }
         //生成新的文件名
         String fileName = System.currentTimeMillis() + "-" + uuid + suffix;
-        String localPath = avatarPath + fileName;
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
+        // 新建目录，以当前日期为目录名
+        String datePath = avatarPath + formatter.format(date) + "/";
+
+        File file = new File(datePath);
+        if (!file.exists()) {
+            boolean mkdirs = file.mkdirs();
+            if (!mkdirs) {
+                log.error("创建目录失败");
+                throw new ErrorSaveFileException("上传失败");
+            }
+        }
+
+        String localPath = datePath + fileName;
         try {
             avatar.transferTo(new File(localPath));
         } catch (IOException e) {
@@ -80,9 +95,9 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
             return one.getId();
         }
         attachment.setMd5(md5);
-        UserLogin loginUserBo = redisTemplate.opsForValue().get(token);
-        if (loginUserBo != null) {
-            attachment.setCreateBy(loginUserBo.getUser().getId());
+        User currentUser = ContextUtil.getCurrentUser();
+        if (currentUser != null) {
+            attachment.setCreateBy(currentUser.getId());
         } else {
             throw new ErrorFoundUserException("用户未登录");
         }

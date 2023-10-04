@@ -11,9 +11,9 @@ public interface AttachmentService extends IService<Attachment> {
 
     /**
      * 保存头像
+     *
      * @param avatar 头像文件
-     * @param token token
      * @return 附件id
      */
-    Long saveAvater(MultipartFile avatar, String token);
+    Long saveImgFile(MultipartFile avatar);
 }

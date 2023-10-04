@@ -19,8 +19,8 @@ import java.io.IOException;
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.setStatus(200);
-        String msg = "认证失败，无法访问系统资源";
+        response.setStatus(401);
+        String msg = "Authentication failed, unable to access system resources";
         response.setContentType("application/json;charset=UTF-8");
         Result<String> error = Result.error(ResultCode.UNAUTHORIZED, msg, null);
         String s = new ObjectMapper().writeValueAsString(error);
