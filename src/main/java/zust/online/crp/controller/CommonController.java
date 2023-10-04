@@ -10,8 +10,10 @@ import zust.online.crp.entity.Result;
 import zust.online.crp.entity.enums.ResultCode;
 import zust.online.crp.entity.po.Attachment;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.PostVo;
 import zust.online.crp.entity.vo.SwiperItemVo;
 import zust.online.crp.service.AttachmentService;
+import zust.online.crp.service.PostService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,8 @@ public class CommonController {
 
     @Resource
     private AttachmentService attachmentService;
+    @Resource
+    private PostService postService;
 
     @PostMapping("/init")
     public Result<String> init() {
@@ -96,14 +100,15 @@ public class CommonController {
 
     @GetMapping("/swiper")
     public Result<List<SwiperItemVo>> getSwiper() {
-        SwiperItemVo cat = SwiperItemVo.builder().img("https://fastly.jsdelivr.net/npm/@vant/assets/cat.jpeg").text("小猫咪").postId(1L).build();
-        SwiperItemVo dog = SwiperItemVo.builder().img("https://fant-mini-plus.top/img/dog.jpg").text("修购").postId(2L).build();
-        SwiperItemVo apple = SwiperItemVo.builder().img("https://img01.yzcdn.cn/vant/apple-3.jpg").text("高贵").postId(3L).build();
-
         ArrayList<SwiperItemVo> swiperItemVos = new ArrayList<>();
-        swiperItemVos.add(cat);
-        swiperItemVos.add(dog);
-        swiperItemVos.add(apple);
+        List<PostVo> postVos = postService.getTopHotPostVos(6);
+        for (PostVo postVo : postVos) {
+            SwiperItemVo swiperItemVo = new SwiperItemVo();
+            swiperItemVo.setImg(String.valueOf(postVo.getImgs().get(0).getId()));
+            swiperItemVo.setText(postVo.getTitle());
+            swiperItemVo.setPostId(String.valueOf(postVo.getId()));
+            swiperItemVos.add(swiperItemVo);
+        }
 
         return Result.success("获取成功", swiperItemVos);
     }

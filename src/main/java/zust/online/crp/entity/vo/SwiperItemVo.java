@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SwiperItemVo {
-    private Long postId;
+    private String postId;
     private String img;
     private String text;
 }

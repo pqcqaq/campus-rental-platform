@@ -13,4 +13,11 @@ public interface CollectInfoService extends IService<CollectInfo> {
      * @return 收藏数
      */
     Long getCollectNumsByPostId(Long id);
+
+    /**
+     * 收藏帖子
+     * @param postId 帖子id
+     * @return 是否已经收藏
+     */
+    boolean collectPost(Long postId);
 }

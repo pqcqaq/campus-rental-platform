@@ -2,12 +2,14 @@ package zust.online.crp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import zust.online.crp.entity.po.*;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.Image;
 import zust.online.crp.entity.vo.PostVo;
 import zust.online.crp.mapper.PostMapper;
+import zust.online.crp.mapper.PostStatisticsInfoMapper;
 import zust.online.crp.service.*;
 import zust.online.crp.utils.ContextUtil;
 
@@ -19,6 +21,7 @@ import java.util.List;
  * @author qcqcqc
  */
 @Service
+@Slf4j
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements PostService {
 
     @Resource
@@ -35,6 +38,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     private ShareRecordsService shareRecordsService;
     @Resource
     private ViewRecordsService viewRecordsService;
+    @Resource
+    private PostStatisticsInfoMapper postStatisticsInfoMapper;
 
     @Override
     public PostVo transPostToPostVo(Post post) {
@@ -45,12 +50,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         List<CommentVo> commentVos = commentService.getCommentVosByPostId(post.getId());
         Long collectNum = collectInfoService.getCollectNumsByPostId(post.getId());
         List<Long> imgs = post.getImgs();
-        List<Image> images = imgs.stream().map(img -> {
+        List<Image> images = new ArrayList<>();
+        for (Long imgId : imgs) {
             Image image = new Image();
-            image.setId(img);
+            image.setId(String.valueOf(imgId));
             image.setShow(true);
-            return image;
-        }).toList();
+            Image apply = image;
+            images.add(apply);
+        }
         LambdaQueryWrapper<CollectInfo> eq1 = new LambdaQueryWrapper<CollectInfo>()
                 .eq(CollectInfo::getPostId, post.getId())
                 .eq(CollectInfo::getCreateBy, currentUser.getId());
@@ -90,5 +97,29 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
             postVos.add(postVo);
         }
         return postVos;
+    }
+
+    @Override
+    public List<PostVo> getTopHotPostVos(int topNum) {
+        // 统计id
+        int topNum1 = topNum >>> 1;
+        List<Long> likeHotPostIds = postStatisticsInfoMapper.getLikeHotPostIds(topNum1);
+        int topNum2 = topNum - topNum1;
+        List<Long> collectHotPostIds = postStatisticsInfoMapper.getCollectHotPostIds(topNum2);
+        // 获取热门帖子
+        List<Post> hotPost = this.listByIds(likeHotPostIds);
+        List<Post> collectHotPost = this.listByIds(collectHotPostIds);
+
+        // 合并
+        hotPost.addAll(collectHotPost);
+
+        return this.transPostListToPostVoList(hotPost);
+    }
+
+    private List<Post> listByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return this.list(new LambdaQueryWrapper<Post>().in(Post::getId, ids));
     }
 }

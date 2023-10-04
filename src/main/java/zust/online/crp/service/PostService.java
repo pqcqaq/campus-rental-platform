@@ -13,4 +13,6 @@ public interface PostService extends IService<Post> {
     PostVo transPostToPostVo(Post post);
 
     List<PostVo> transPostListToPostVoList(List<Post> postList);
+
+    List<PostVo> getTopHotPostVos(int topNum);
 }

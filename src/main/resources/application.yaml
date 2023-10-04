@@ -16,7 +16,7 @@ token:
   time: 60*60*24*7
 debug: true
 
-avatarPath: "E:\\avatar\\"
+imagePath: "E:\\avatar\\"
 
 #mybatis-plus:
 #  global-config:

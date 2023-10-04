@@ -14,7 +14,7 @@ import zust.online.crp.entity.po.User;
 @NoArgsConstructor
 @Builder
 public class CommentVo {
-    private Long id;
+    private String id;
     private User author;
     private String detail;
     private String createTime;

@@ -2,10 +2,9 @@ package zust.online.crp.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.utils.ContextUtil;
 
 import java.util.Date;
 
@@ -18,15 +17,10 @@ public class MyBatisMetaObjectHandler implements MetaObjectHandler {
     /**
      * 获取username，如果获取不到则返回null，不会写入数据库
      */
-    private Long getUsername() {
+    private Long getUserId() {
         // 获取security上下文
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User user = (User) authentication.getPrincipal();
-            return user.getId();
-        } catch (Exception e) {
-            return null;
-        }
+        User currentUser = ContextUtil.getCurrentUser();
+        return currentUser == null ? null : currentUser.getId();
     }
 
     /**
@@ -39,7 +33,7 @@ public class MyBatisMetaObjectHandler implements MetaObjectHandler {
         this.setFieldValByName("updateTime", new Date(), metaObject);
 
         // 设置创建人
-        this.setFieldValByName("createBy", getUsername(), metaObject);
+        this.setFieldValByName("createBy", getUserId(), metaObject);
     }
 
     /**
@@ -51,7 +45,7 @@ public class MyBatisMetaObjectHandler implements MetaObjectHandler {
         this.setFieldValByName("updateTime", new Date(), metaObject);
 
         // 设置更新人
-        this.setFieldValByName("updateBy", getUsername(), metaObject);
+        this.setFieldValByName("updateBy", getUserId(), metaObject);
     }
 
 }

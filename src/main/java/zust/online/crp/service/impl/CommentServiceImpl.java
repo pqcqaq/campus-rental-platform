@@ -45,7 +45,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         CommentVo commentVo = new CommentVo();
         commentVo.setDetail(comment.getCommentDetail());
         commentVo.setCreateTime(comment.getCreateTime());
-        commentVo.setId(comment.getId());
+        commentVo.setId(String.valueOf(comment.getId()));
         commentVo.setAuthor(byId);
         return commentVo;
     }

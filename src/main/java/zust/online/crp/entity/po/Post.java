@@ -57,7 +57,7 @@ public class Post implements Serializable {
 
     ) {
         return PostVo.builder()
-                .id(this.id)
+                .id(String.valueOf(this.id))
                 .title(this.title)
                 .intro(this.intro)
                 .imgs(imgs)

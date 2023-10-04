@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Image {
-    private Long id;
+    private String id;
     private String url;
     private Boolean show;
 }

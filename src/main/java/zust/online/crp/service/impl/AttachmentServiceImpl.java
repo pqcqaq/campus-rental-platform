@@ -35,8 +35,8 @@ import java.util.UUID;
 @Slf4j
 public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachment> implements AttachmentService {
 
-    @Value("${avatarPath}")
-    private String avatarPath;
+    @Value("${imagePath}")
+    private String imagePath;
 
     @Override
     public Long saveImgFile(MultipartFile avatar) {
@@ -60,7 +60,7 @@ public class AttachmentServiceImpl extends ServiceImpl<AttachmentMapper, Attachm
         Date date = new Date();
         SimpleDateFormat formatter = new SimpleDateFormat("yyy-MM-dd");
         // 新建目录，以当前日期为目录名
-        String datePath = avatarPath + formatter.format(date) + "/";
+        String datePath = imagePath + formatter.format(date) + "/";
 
         File file = new File(datePath);
         if (!file.exists()) {
