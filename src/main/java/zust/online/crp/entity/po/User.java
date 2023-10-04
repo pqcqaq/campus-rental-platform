@@ -48,6 +48,7 @@ public class User implements Serializable {
                 .nickName(nickName)
                 .school(school)
                 .token(token)
+                .role(roles.get(0))
                 .build();
     }
 }

@@ -114,6 +114,7 @@ public class SecurityConfig {
                 .and().exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).accessDeniedHandler(accessDeniedHandler)
                 .and().authorizeRequests(auth ->
                         auth.antMatchers("/user/login").permitAll()
+                                .antMatchers("/user/logout").permitAll()
                                 .antMatchers("/common/**").permitAll()
                                 .antMatchers("/posts/list/**").permitAll()
                                 .anyRequest().authenticated()

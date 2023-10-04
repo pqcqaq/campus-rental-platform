@@ -11,9 +11,9 @@ import zust.online.crp.entity.po.User;
 public class ContextUtil {
     public static User getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User)) {
+        if (!(principal instanceof User user)) {
             return null;
         }
-        return (User) principal;
+        return user;
     }
 }

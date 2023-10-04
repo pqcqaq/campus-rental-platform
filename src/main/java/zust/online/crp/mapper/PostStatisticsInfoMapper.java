@@ -17,7 +17,7 @@ public interface PostStatisticsInfoMapper {
      * @param topNum 热门帖子的数量
      * @return 热门帖子的id
      */
-    @Select("SELECT post_id, count( * ) AS count FROM like_records GROUP BY post_id ORDER BY count DESC LIMIT #{topNum}")
+    @Select("SELECT post_id AS count FROM like_records GROUP BY post_id ORDER BY count DESC LIMIT #{topNum}")
     List<Long> getLikeHotPostIds(int topNum);
 
     /**
@@ -26,6 +26,6 @@ public interface PostStatisticsInfoMapper {
      * @param topNum 热门帖子的数量
      * @return 热门帖子的id
      */
-    @Select("SELECT post_id, count( * ) AS count FROM collect GROUP BY post_id ORDER BY count DESC LIMIT #{topNum}")
+    @Select("SELECT post_id AS count FROM collect GROUP BY post_id ORDER BY count DESC LIMIT #{topNum}")
     List<Long> getCollectHotPostIds(int topNum);
 }
