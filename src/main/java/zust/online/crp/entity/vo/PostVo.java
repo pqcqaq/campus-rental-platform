@@ -8,6 +8,7 @@ import zust.online.crp.entity.po.Post;
 import zust.online.crp.entity.po.User;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -23,6 +24,7 @@ public class PostVo {
     private String title;
     @NotBlank(message = "内容不能为空")
     private String intro;
+    @NotEmpty(message = "至少一张图片")
     private List<Image> imgs;
     private String createTime;
     private String updateTime;
@@ -36,6 +38,7 @@ public class PostVo {
     private Integer shareNum;
     private Integer viewNum;
     private Integer status;
+    private Boolean editable;
 
     public Post toSavePo() {
         Post post = new Post();

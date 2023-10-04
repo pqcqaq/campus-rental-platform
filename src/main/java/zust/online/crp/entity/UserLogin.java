@@ -103,6 +103,7 @@ public class UserLogin implements UserDetails {
         userVo.setSchool(user.getSchool());
         userVo.setLinkMan(user.getLinkMan());
         userVo.setToken(token);
+        userVo.setRole(user.getRoles().get(0));
         return userVo;
     }
 }

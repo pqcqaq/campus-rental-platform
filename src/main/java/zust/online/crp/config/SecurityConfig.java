@@ -115,6 +115,7 @@ public class SecurityConfig {
                 .and().authorizeRequests(auth ->
                         auth.antMatchers("/user/login").permitAll()
                                 .antMatchers("/common/**").permitAll()
+                                .antMatchers("/posts/list/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors().configurationSource(corsConfigurationSource())

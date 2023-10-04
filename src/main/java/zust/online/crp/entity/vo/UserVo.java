@@ -27,6 +27,7 @@ public class UserVo {
     private String nickName;
     private String school;
     private String token;
+    private String role;
 
     public User toPo() {
         return User.builder()

@@ -53,7 +53,8 @@ public class Post implements Serializable {
                        Boolean isCollect,
                        Integer shareNum,
                        Integer viewNum,
-                       Integer status
+                       Integer status,
+                       Boolean editable
 
     ) {
         return PostVo.builder()
@@ -73,6 +74,7 @@ public class Post implements Serializable {
                 .shareNum(shareNum)
                 .viewNum(viewNum)
                 .status(status)
+                .editable(editable)
                 .build();
     }
 }

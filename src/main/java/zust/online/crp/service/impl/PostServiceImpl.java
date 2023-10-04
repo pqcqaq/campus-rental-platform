@@ -48,32 +48,41 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 获取作者信息
         User author = userService.getById(post.getCreateBy());
         List<CommentVo> commentVos = commentService.getCommentVosByPostId(post.getId());
+        // 获取收藏数
         Long collectNum = collectInfoService.getCollectNumsByPostId(post.getId());
         List<Long> imgs = post.getImgs();
         List<Image> images = new ArrayList<>();
+        // 获取图片信息
         for (Long imgId : imgs) {
             Image image = new Image();
             image.setId(String.valueOf(imgId));
             image.setShow(true);
-            Image apply = image;
-            images.add(apply);
+            images.add(image);
         }
-        LambdaQueryWrapper<CollectInfo> eq1 = new LambdaQueryWrapper<CollectInfo>()
-                .eq(CollectInfo::getPostId, post.getId())
-                .eq(CollectInfo::getCreateBy, currentUser.getId());
-        CollectInfo collectInfo = collectInfoService.getOne(eq1);
-        boolean isCollect = collectInfo != null;
-
+        boolean isCollect = false;
+        boolean isLike = false;
         long count = likeRecordsService.count(new LambdaQueryWrapper<LikeRecords>().eq(LikeRecords::getPostId, post.getId()));
-        LambdaQueryWrapper<LikeRecords> eq = new LambdaQueryWrapper<LikeRecords>()
-                .eq(LikeRecords::getPostId, post.getId())
-                .eq(LikeRecords::getCreateBy, currentUser.getId());
-        LikeRecords likeRecords = likeRecordsService.getOne(eq);
-        boolean isLike = likeRecords != null;
+
+        if (currentUser != null) {
+            // 获取当前用户是否收藏
+            LambdaQueryWrapper<CollectInfo> eq1 = new LambdaQueryWrapper<CollectInfo>()
+                    .eq(CollectInfo::getPostId, post.getId())
+                    .eq(CollectInfo::getCreateBy, currentUser.getId());
+            CollectInfo collectInfo = collectInfoService.getOne(eq1);
+            isCollect = collectInfo != null;
+
+            // 获取当前用户是否点赞
+            LambdaQueryWrapper<LikeRecords> eq = new LambdaQueryWrapper<LikeRecords>()
+                    .eq(LikeRecords::getPostId, post.getId())
+                    .eq(LikeRecords::getCreateBy, currentUser.getId());
+            LikeRecords likeRecords = likeRecordsService.getOne(eq);
+            isLike = likeRecords != null;
+        }
 
         List<ShareRecords> shareRecords = shareRecordsService.list(new LambdaQueryWrapper<ShareRecords>().eq(ShareRecords::getPostId, post.getId()));
         List<ViewRecords> viewRecords = viewRecordsService.list(new LambdaQueryWrapper<ViewRecords>().eq(ViewRecords::getPostId, post.getId()));
-
+        // 如果是自己的帖子，可以编辑
+        boolean editable = currentUser != null && currentUser.getId().equals(post.getCreateBy());
         return post.toVo(
                 images,
                 commentVos,
@@ -85,7 +94,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 isCollect,
                 shareRecords.size(),
                 viewRecords.size(),
-                1
+                1,
+                editable
         );
     }
 
