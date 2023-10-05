@@ -1,5 +1,6 @@
 package zust.online.crp.handler;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -21,7 +22,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     /**
-     * 设置状态码为 400
+     * MethodArgumentNotValidException
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({MethodArgumentNotValidException.class})
@@ -40,10 +41,25 @@ public class GlobalExceptionHandler {
         return Result.error(400, "参数错误", msg);
     }
 
+    /**
+     * ErrorFoundUserException
+     *
+     * @param e 异常
+     * @return 结果
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({ErrorFoundUserException.class})
     public Result<String> errorFoundUserExceptionHandler(ErrorFoundUserException e) {
         return Result.error(400, "用户未登录", e.getMessage());
+    }
+
+    /**
+     * FileSizeLimitExceededException
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({FileSizeLimitExceededException.class})
+    public Result<String> fileSizeLimitExceededExceptionHandler(FileSizeLimitExceededException e) {
+        return Result.error(400, "文件大小超过限制", e.getMessage());
     }
 
 }

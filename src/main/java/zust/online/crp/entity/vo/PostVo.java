@@ -1,11 +1,14 @@
 package zust.online.crp.entity.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import zust.online.crp.annotation.SensitiveWords;
 import zust.online.crp.entity.po.Post;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.serializer.SensitiveStringReplaceDeserializer;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -23,8 +26,10 @@ public class PostVo {
     private String id;
     @NotBlank(message = "标题不能为空")
     @Size(max = 20, message = "标题长度不能超过20")
+    @SensitiveWords(message = "标题含有敏感词")
     private String title;
     @NotBlank(message = "内容不能为空")
+    @JsonDeserialize(using = SensitiveStringReplaceDeserializer.class)
     private String intro;
     @NotEmpty(message = "至少一张图片")
     private List<Image> imgs;
