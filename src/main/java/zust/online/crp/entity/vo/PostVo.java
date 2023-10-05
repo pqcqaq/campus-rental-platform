@@ -9,6 +9,7 @@ import zust.online.crp.entity.po.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -21,6 +22,7 @@ import java.util.List;
 public class PostVo {
     private String id;
     @NotBlank(message = "标题不能为空")
+    @Size(max = 20, message = "标题长度不能超过20")
     private String title;
     @NotBlank(message = "内容不能为空")
     private String intro;

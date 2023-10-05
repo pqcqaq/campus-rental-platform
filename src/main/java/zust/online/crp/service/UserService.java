@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.dto.LoginParam;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.UserInfoRecordsVo;
 import zust.online.crp.entity.vo.UserVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author qcqcqc
@@ -27,4 +29,6 @@ public interface UserService extends IService<User> {
     UserVo refreshToken(HttpServletRequest httpServletRequest);
 
     Boolean logout(HttpServletRequest httpServletRequest);
+
+    List<UserInfoRecordsVo> getUserInfoRecords();
 }

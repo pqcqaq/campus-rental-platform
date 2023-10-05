@@ -1,8 +1,10 @@
 package zust.online.crp.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hanzoy.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,14 +15,22 @@ import org.springframework.stereotype.Service;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.UserLogin;
 import zust.online.crp.entity.dto.LoginParam;
+import zust.online.crp.entity.po.CollectInfo;
+import zust.online.crp.entity.po.Post;
 import zust.online.crp.entity.po.User;
+import zust.online.crp.entity.vo.UserInfoRecordsVo;
 import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.mapper.UserMapper;
+import zust.online.crp.service.CollectInfoService;
+import zust.online.crp.service.LikeRecordsService;
+import zust.online.crp.service.PostService;
 import zust.online.crp.service.UserService;
 import zust.online.crp.utils.ContextUtil;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +47,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private AuthenticationManager authenticationManager;
     @Resource
     private RedisTemplate<String, UserLogin> redisTemplate;
+    @Resource
+    private CollectInfoService collectInfoService;
+    @Resource
+    private LikeRecordsService likeRecordsService;
+    @Resource
+    @Lazy
+    private PostService postService;
 
     @Override
     public Result<UserVo> login(LoginParam loginParam) {
@@ -119,5 +136,55 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 从redis中删除
         Boolean delete = redisTemplate.delete(token);
         return !Boolean.FALSE.equals(delete);
+    }
+
+    @Override
+    public List<UserInfoRecordsVo> getUserInfoRecords() {
+        User currentUser = ContextUtil.getCurrentUser();
+
+        UserInfoRecordsVo lease = new UserInfoRecordsVo();
+        lease.setName("我的租赁");
+        lease.setRouterName("lease");
+        lease.setValue(0L);
+
+        UserInfoRecordsVo hire = new UserInfoRecordsVo();
+        hire.setName("我的出租");
+        hire.setRouterName("hire");
+        hire.setValue(0L);
+
+        UserInfoRecordsVo collect = new UserInfoRecordsVo();
+        collect.setName("我的收藏");
+        collect.setRouterName("collect");
+        collect.setValue(0L);
+
+        UserInfoRecordsVo publish = new UserInfoRecordsVo();
+        publish.setName("我的发布");
+        publish.setRouterName("publish");
+        publish.setValue(0L);
+
+        ArrayList<UserInfoRecordsVo> userInfoRecordsVos = new ArrayList<>();
+        userInfoRecordsVos.add(lease);
+        userInfoRecordsVos.add(hire);
+        userInfoRecordsVos.add(collect);
+        userInfoRecordsVos.add(publish);
+
+        if (currentUser == null) {
+            return userInfoRecordsVos;
+        }
+
+        List<CollectInfo> list = collectInfoService.list(new LambdaQueryWrapper<CollectInfo>().eq(CollectInfo::getCreateBy, currentUser.getId()));
+        ArrayList<CollectInfo> collectInfos = new ArrayList<>();
+        for (CollectInfo collectInfo : list) {
+            boolean b = postService.checkIsDelete(collectInfo.getPostId());
+            if (!b) {
+                collectInfos.add(collectInfo);
+            }
+        }
+        collect.setValue((long) collectInfos.size());
+
+        long count1 = postService.count(new LambdaQueryWrapper<Post>().eq(Post::getCreateBy, currentUser.getId()));
+        publish.setValue(count1);
+
+        return userInfoRecordsVos;
     }
 }

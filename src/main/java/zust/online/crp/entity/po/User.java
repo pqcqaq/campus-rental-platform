@@ -38,6 +38,7 @@ public class User implements Serializable {
     private List<String> roles;
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private Date createTime;
+    private Boolean disabled;
 
     public UserVo toVo(String token) {
         return UserVo.builder()
@@ -50,5 +51,9 @@ public class User implements Serializable {
                 .token(token)
                 .role(roles.get(0))
                 .build();
+    }
+
+    public boolean isAdmin() {
+        return roles.contains("ROLE_ADMIN");
     }
 }

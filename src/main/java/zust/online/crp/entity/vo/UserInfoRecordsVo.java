@@ -8,13 +8,12 @@ import lombok.NoArgsConstructor;
 /**
  * @author qcqcqc
  */
-@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SwiperItemVo {
-    private String postId;
-    private String img;
-    private String text;
-    private String type;
+@Builder
+public class UserInfoRecordsVo {
+    private String name;
+    private Long value;
+    private String routerName;
 }

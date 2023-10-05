@@ -3,6 +3,7 @@ package zust.online.crp.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import zust.online.crp.entity.po.Post;
 import zust.online.crp.entity.vo.PostVo;
+import zust.online.crp.entity.vo.SwiperItemVo;
 
 import java.util.List;
 
@@ -14,5 +15,7 @@ public interface PostService extends IService<Post> {
 
     List<PostVo> transPostListToPostVoList(List<Post> postList);
 
-    List<PostVo> getTopHotPostVos(int topNum);
+    List<SwiperItemVo> getTopHotPostVos(int topNum);
+
+    boolean checkIsDelete(Long postId);
 }

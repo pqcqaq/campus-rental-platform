@@ -2,18 +2,17 @@ package zust.online.crp.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.dto.LoginParam;
+import zust.online.crp.entity.vo.UserInfoRecordsVo;
 import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.service.UserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author qcqcqc
@@ -56,5 +55,11 @@ public class UserController {
     public Result<UserVo> refreshToken(HttpServletRequest httpServletRequest) {
         UserVo userVo = userService.refreshToken(httpServletRequest);
         return Result.success("刷新成功", userVo);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/getUserInfoRecords")
+    public Result<List<UserInfoRecordsVo>> getUserInfoRecords() {
+        return Result.success(userService.getUserInfoRecords());
     }
 }

@@ -10,7 +10,6 @@ import zust.online.crp.entity.Result;
 import zust.online.crp.entity.enums.ResultCode;
 import zust.online.crp.entity.po.Attachment;
 import zust.online.crp.entity.po.User;
-import zust.online.crp.entity.vo.PostVo;
 import zust.online.crp.entity.vo.SwiperItemVo;
 import zust.online.crp.service.AttachmentService;
 import zust.online.crp.service.PostService;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -100,16 +98,7 @@ public class CommonController {
 
     @GetMapping("/swiper")
     public Result<List<SwiperItemVo>> getSwiper() {
-        ArrayList<SwiperItemVo> swiperItemVos = new ArrayList<>();
-        List<PostVo> postVos = postService.getTopHotPostVos(6);
-        for (PostVo postVo : postVos) {
-            SwiperItemVo swiperItemVo = new SwiperItemVo();
-            swiperItemVo.setImg(String.valueOf(postVo.getImgs().get(0).getId()));
-            swiperItemVo.setText(postVo.getTitle());
-            swiperItemVo.setPostId(String.valueOf(postVo.getId()));
-            swiperItemVos.add(swiperItemVo);
-        }
-
+        List<SwiperItemVo> swiperItemVos = postService.getTopHotPostVos(6);
         return Result.success("获取成功", swiperItemVos);
     }
 }

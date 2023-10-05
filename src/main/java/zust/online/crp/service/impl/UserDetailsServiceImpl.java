@@ -30,8 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("用户名未发现");
         }
-        //查询对应权限信息
-
         //数据封装为UserDetails返回
         return new UserLogin(user);
 

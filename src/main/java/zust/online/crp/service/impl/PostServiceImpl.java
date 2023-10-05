@@ -8,6 +8,7 @@ import zust.online.crp.entity.po.*;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.Image;
 import zust.online.crp.entity.vo.PostVo;
+import zust.online.crp.entity.vo.SwiperItemVo;
 import zust.online.crp.mapper.PostMapper;
 import zust.online.crp.mapper.PostStatisticsInfoMapper;
 import zust.online.crp.service.*;
@@ -16,6 +17,8 @@ import zust.online.crp.utils.ContextUtil;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author qcqcqc
@@ -82,7 +85,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         List<ShareRecords> shareRecords = shareRecordsService.list(new LambdaQueryWrapper<ShareRecords>().eq(ShareRecords::getPostId, post.getId()));
         List<ViewRecords> viewRecords = viewRecordsService.list(new LambdaQueryWrapper<ViewRecords>().eq(ViewRecords::getPostId, post.getId()));
         // 如果是自己的帖子，可以编辑
-        boolean editable = currentUser != null && currentUser.getId().equals(post.getCreateBy());
+        boolean editable = currentUser != null && (currentUser.getId().equals(post.getCreateBy()) || currentUser.isAdmin());
         return post.toVo(
                 images,
                 commentVos,
@@ -110,20 +113,51 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     }
 
     @Override
-    public List<PostVo> getTopHotPostVos(int topNum) {
+    public List<SwiperItemVo> getTopHotPostVos(int topNum) {
         // 统计id
         int topNum1 = topNum >>> 1;
         List<Long> likeHotPostIds = postStatisticsInfoMapper.getLikeHotPostIds(topNum1);
         int topNum2 = topNum - topNum1;
         List<Long> collectHotPostIds = postStatisticsInfoMapper.getCollectHotPostIds(topNum2);
         // 获取热门帖子
-        List<Post> hotPost = this.listByIds(likeHotPostIds);
+        List<Post> likeHotPost = this.listByIds(likeHotPostIds);
         List<Post> collectHotPost = this.listByIds(collectHotPostIds);
 
-        // 合并
-        hotPost.addAll(collectHotPost);
+        //noinspection ComparatorMethodParameterNotUsed
+        Set<SwiperItemVo> swiperItemVos = new TreeSet<>((newValue, oldValue) -> {
+            if (newValue.getPostId().equals(oldValue.getPostId())) {
+                // 如果postId一样，只保留一个，并将类型改为collect like
+                oldValue.setType(oldValue.getType().concat(" ").concat(newValue.getType()));
+                return 0;
+            }
+            return 1;
+        });
 
-        return this.transPostListToPostVoList(hotPost);
+        for (Post listToPostVo : likeHotPost) {
+            SwiperItemVo swiperItemVo = new SwiperItemVo();
+            swiperItemVo.setImg(String.valueOf(listToPostVo.getImgs().get(0)));
+            swiperItemVo.setText(listToPostVo.getTitle());
+            swiperItemVo.setPostId(String.valueOf(listToPostVo.getId()));
+            swiperItemVo.setType("like");
+            swiperItemVos.add(swiperItemVo);
+        }
+
+        for (Post listToPostVo : collectHotPost) {
+            SwiperItemVo swiperItemVo = new SwiperItemVo();
+            swiperItemVo.setImg(String.valueOf(listToPostVo.getImgs().get(0)));
+            swiperItemVo.setText(listToPostVo.getTitle());
+            swiperItemVo.setPostId(String.valueOf(listToPostVo.getId()));
+            swiperItemVo.setType("collect");
+            swiperItemVos.add(swiperItemVo);
+        }
+
+        return new ArrayList<>(swiperItemVos);
+    }
+
+    @Override
+    public boolean checkIsDelete(Long postId) {
+        Post post = this.getById(postId);
+        return post == null;
     }
 
     private List<Post> listByIds(List<Long> ids) {
