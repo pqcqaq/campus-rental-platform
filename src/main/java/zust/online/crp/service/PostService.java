@@ -18,4 +18,6 @@ public interface PostService extends IService<Post> {
     List<SwiperItemVo> getTopHotPostVos(int topNum);
 
     boolean checkIsDelete(Long postId);
+
+    PostVo getById(Long postId, boolean detailed);
 }

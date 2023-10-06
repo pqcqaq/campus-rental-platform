@@ -67,7 +67,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         }
         boolean isCollect = false;
         boolean isLike = false;
-        long count = likeRecordsService.count(new LambdaQueryWrapper<LikeRecords>().eq(LikeRecords::getPostId, post.getId()));
+        long count = viewRecordsService.countPostViewRecords(post.getId());
 
         if (currentUser != null) {
             // 获取当前用户是否收藏
@@ -161,6 +161,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     public boolean checkIsDelete(Long postId) {
         Post post = this.getById(postId);
         return post == null;
+    }
+
+    @Override
+    public PostVo getById(Long postId, boolean detailed) {
+        Post post = this.getById(postId);
+        if (post == null) {
+            return null;
+        }
+        return this.transPostToPostVo(post, detailed);
     }
 
     private List<Post> listByIds(List<Long> ids) {

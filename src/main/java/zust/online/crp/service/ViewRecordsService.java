@@ -7,4 +7,7 @@ import zust.online.crp.entity.po.ViewRecords;
  * @author qcqcqc
  */
 public interface ViewRecordsService extends IService<ViewRecords> {
+    void addRecord(Long postId);
+
+    long countPostViewRecords(Long id);
 }

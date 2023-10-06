@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import zust.online.crp.entity.po.Comment;
-import zust.online.crp.entity.po.User;
 import zust.online.crp.entity.vo.CommentVo;
+import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.mapper.CommentMapper;
 import zust.online.crp.service.CommentService;
 import zust.online.crp.service.UserService;
-import zust.online.crp.utils.TimeFormatterUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -32,6 +31,11 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return this.transCommentListToCommentVoList(list);
     }
 
+    private List<CommentVo> getCommentsForCommentsByIds(List<Long> ids) {
+        List<Comment> list = this.list(new LambdaQueryWrapper<Comment>().in(Comment::getId, ids));
+        return this.transCommentListToCommentVoList(list);
+    }
+
     private List<CommentVo> transCommentListToCommentVoList(List<Comment> commentList) {
         ArrayList<CommentVo> commentVos = new ArrayList<>();
         for (Comment comment : commentList) {
@@ -42,12 +46,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     private CommentVo transCommentToCommentVo(Comment comment) {
         Long userId = comment.getCreateBy();
-        User byId = userService.getById(userId);
-        CommentVo commentVo = new CommentVo();
-        commentVo.setDetail(comment.getCommentDetail());
-        commentVo.setCreateTime(TimeFormatterUtils.dateToString(comment.getCreateTime()));
-        commentVo.setId(String.valueOf(comment.getId()));
-        commentVo.setAuthor(byId);
-        return commentVo;
+        UserVo byId = userService.getById(userId, true);
+        return comment.toVo(byId, getCommentsForCommentsByIds(comment.getCommentsIds()));
     }
 }

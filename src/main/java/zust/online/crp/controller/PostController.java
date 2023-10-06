@@ -13,6 +13,7 @@ import zust.online.crp.entity.vo.PostVo;
 import zust.online.crp.service.CollectInfoService;
 import zust.online.crp.service.LikeRecordsService;
 import zust.online.crp.service.PostService;
+import zust.online.crp.service.ViewRecordsService;
 import zust.online.crp.utils.ContextUtil;
 
 import javax.annotation.Resource;
@@ -33,6 +34,8 @@ public class PostController {
     private LikeRecordsService likeRecordsService;
     @Resource
     private CollectInfoService collectInfoService;
+    @Resource
+    private ViewRecordsService viewRecordsService;
 
     /**
      * 首页：获取帖子列表
@@ -174,8 +177,8 @@ public class PostController {
     @GetMapping("/{postId}")
     public Result<PostVo> getPostDetail(@PathVariable Long postId) {
         log.info("获取帖子详情：{}", postId);
-        Post post = postService.getById(postId);
-        PostVo postVo = postService.transPostToPostVo(post, true);
+        PostVo postVo = postService.getById(postId, true);
+        viewRecordsService.addRecord(postId);
         return Result.success(postVo);
     }
 
