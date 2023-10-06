@@ -33,4 +33,8 @@ public interface UserService extends IService<User> {
     List<UserInfoRecordsVo> getUserInfoRecords();
 
     String saveBackground(String background);
+
+    UserVo getById(Long userId, boolean detailed);
+
+    boolean follow(Long userId);
 }

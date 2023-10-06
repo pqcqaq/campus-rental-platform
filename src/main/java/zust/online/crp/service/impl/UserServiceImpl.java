@@ -17,14 +17,13 @@ import zust.online.crp.entity.UserLogin;
 import zust.online.crp.entity.dto.LoginParam;
 import zust.online.crp.entity.po.CollectInfo;
 import zust.online.crp.entity.po.Post;
+import zust.online.crp.entity.po.SubscribeRecord;
 import zust.online.crp.entity.po.User;
 import zust.online.crp.entity.vo.UserInfoRecordsVo;
 import zust.online.crp.entity.vo.UserVo;
+import zust.online.crp.exception.ErrorAlterStatusException;
 import zust.online.crp.mapper.UserMapper;
-import zust.online.crp.service.CollectInfoService;
-import zust.online.crp.service.LikeRecordsService;
-import zust.online.crp.service.PostService;
-import zust.online.crp.service.UserService;
+import zust.online.crp.service.*;
 import zust.online.crp.utils.ContextUtil;
 
 import javax.annotation.Resource;
@@ -54,6 +53,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     @Lazy
     private PostService postService;
+    @Resource
+    private SubscribeRecordService subscribeRecordService;
 
     @Override
     public Result<UserVo> login(LoginParam loginParam) {
@@ -87,13 +88,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setId(id);
         this.updateById(user);
         //更新user
-        User byId = this.getById(id);
+        UserVo byId = this.getById(id, true);
         // 刷新redis
         redisTemplate.delete(userVo.getToken());
-        String token = jwtUtils.createToken(byId);
-        UserLogin userLogin1 = new UserLogin(byId);
+        UserLogin userLogin1 = new UserLogin(byId.toPo());
+        String token = jwtUtils.createToken(userLogin1);
         redisTemplate.opsForValue().set(token, userLogin1, 7, TimeUnit.DAYS);
-        return byId.toVo(token);
+        return byId;
     }
 
     @Override
@@ -125,14 +126,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             throw new RuntimeException("刷新失败");
         }
-        User byId = this.getById(id);
-        UserLogin userLogin1 = new UserLogin(byId);
+        UserVo byId = this.getById(id, true);
+        UserLogin userLogin1 = new UserLogin(byId.toPo());
         token = jwtUtils.createToken(userLogin1);
         redisTemplate.opsForValue().set(token, userLogin1, 7, TimeUnit.DAYS);
-        if (byId != null) {
-            return byId.toVo(token);
-        }
-        throw new RuntimeException("刷新失败");
+        return byId;
     }
 
     @Override
@@ -208,5 +206,73 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userLogin.setBackground(background);
         this.updateById(userLogin);
         return "success";
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param userId   用户id
+     * @param detailed 是否详细
+     * @return 用户信息Vo
+     */
+    @Override
+    public UserVo getById(Long userId, boolean detailed) {
+        User currentUser = ContextUtil.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        // 查询当前用户是否关注了该用户
+        boolean isSubscribe = false;
+        SubscribeRecord one = subscribeRecordService.getOne(new LambdaQueryWrapper<SubscribeRecord>()
+                .eq(SubscribeRecord::getCreateBy, currentUser.getId())
+                .eq(SubscribeRecord::getPublisherId, userId));
+        if (one != null) {
+            isSubscribe = true;
+        }
+        User user = this.getById(userId);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        if (!detailed) {
+            return user.toVo(null, null, null, isSubscribe);
+        }
+        // 获取关注的数量
+        long sub = subscribeRecordService.count(new LambdaQueryWrapper<SubscribeRecord>()
+                .eq(SubscribeRecord::getCreateBy, userId));
+        // 获取用户被关注的数量
+        long pub = subscribeRecordService.count(new LambdaQueryWrapper<SubscribeRecord>()
+                .eq(SubscribeRecord::getPublisherId, userId));
+        return user.toVo(null, sub, pub, isSubscribe);
+    }
+
+    @Override
+    public boolean follow(Long userId) {
+        User currentUser = ContextUtil.getCurrentUser();
+        if (currentUser == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        // 查询当前用户是否关注了该用户
+        SubscribeRecord one = subscribeRecordService.getOne(new LambdaQueryWrapper<SubscribeRecord>()
+                .eq(SubscribeRecord::getCreateBy, currentUser.getId())
+                .eq(SubscribeRecord::getPublisherId, userId));
+        if (one != null) {
+            // 取消关注
+            boolean b = subscribeRecordService.removeById(one.getId());
+            if (!b) {
+                throw new ErrorAlterStatusException("取消关注失败");
+            }
+            // 返回取消关注
+            return false;
+        } else {
+            // 关注
+            SubscribeRecord subscribeRecord = new SubscribeRecord();
+            subscribeRecord.setCreateBy(currentUser.getId());
+            subscribeRecord.setPublisherId(userId);
+            boolean save = subscribeRecordService.save(subscribeRecord);
+            if (!save) {
+                throw new ErrorAlterStatusException("关注失败");
+            }
+            return true;
+        }
     }
 }

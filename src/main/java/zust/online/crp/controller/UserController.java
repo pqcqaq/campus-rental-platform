@@ -68,4 +68,13 @@ public class UserController {
     public Result<List<UserInfoRecordsVo>> getUserInfoRecords() {
         return Result.success(userService.getUserInfoRecords());
     }
+
+    @PutMapping("/follow/{userId}")
+    public Result<Boolean> follow(@PathVariable Long userId) {
+        boolean f = userService.follow(userId);
+        if (f) {
+            return Result.success(200, "关注成功", true);
+        }
+        return Result.success(200, "取消关注成功", false);
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import zust.online.crp.entity.Result;
+import zust.online.crp.exception.ErrorAlterStatusException;
 import zust.online.crp.exception.ErrorFoundUserException;
 
 import java.util.List;
@@ -60,6 +61,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({FileSizeLimitExceededException.class})
     public Result<String> fileSizeLimitExceededExceptionHandler(FileSizeLimitExceededException e) {
         return Result.error(400, "文件大小超过限制", e.getMessage());
+    }
+
+    /**
+     * ErrorAlterStatusException
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ErrorAlterStatusException.class})
+    public Result<String> errorAlterStatusExceptionHandler(ErrorAlterStatusException e) {
+        return Result.error(400, "修改失败", e.getMessage());
     }
 
 }

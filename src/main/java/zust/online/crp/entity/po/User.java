@@ -15,7 +15,6 @@ import zust.online.crp.serializer.LocalDateTimeSerializer;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -45,8 +44,9 @@ public class User implements Serializable {
     private LocalDateTime createTime;
     private Boolean disabled;
 
-    public UserVo toVo(String token) {
+    public UserVo toVo(String token, Long subscribedNum, Long beSubscribeNum, Boolean isFollow) {
         return UserVo.builder()
+                .id(id)
                 .linkMan(linkMan)
                 .username(username)
                 .avatar(avatar)
@@ -56,6 +56,9 @@ public class User implements Serializable {
                 .school(school)
                 .token(token)
                 .role(roles.get(0))
+                .followNum(subscribedNum)
+                .fansNum(beSubscribeNum)
+                .isFollow(isFollow)
                 .build();
     }
 

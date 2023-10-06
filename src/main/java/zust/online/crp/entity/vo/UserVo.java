@@ -17,6 +17,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserVo {
+    private Long id;
     private String linkMan;
     private String username;
     private String avatar;
@@ -28,6 +29,9 @@ public class UserVo {
     private String school;
     private String token;
     private String role;
+    private Long followNum;
+    private Long fansNum;
+    private Boolean isFollow;
 
     public User toPo() {
         return User.builder()

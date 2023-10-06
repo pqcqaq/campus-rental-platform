@@ -35,7 +35,7 @@ public class PostVo {
     private List<Image> imgs;
     private String createTime;
     private String updateTime;
-    private User author;
+    private UserVo author;
     private Long likeNum;
     private Long commentNum;
     private Long collectNum;

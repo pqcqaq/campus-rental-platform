@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.Image;
 import zust.online.crp.entity.vo.PostVo;
+import zust.online.crp.entity.vo.UserVo;
 import zust.online.crp.utils.TimeFormatterUtils;
 
 import java.io.Serial;
@@ -46,7 +47,7 @@ public class Post implements Serializable {
 
     public PostVo toVo(List<Image> imgs,
                        List<CommentVo> commentVos,
-                       User author,
+                       UserVo author,
                        Long likeNum,
                        Long commentNum,
                        Long collectNum,

@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import zust.online.crp.entity.po.*;
-import zust.online.crp.entity.vo.CommentVo;
-import zust.online.crp.entity.vo.Image;
-import zust.online.crp.entity.vo.PostVo;
-import zust.online.crp.entity.vo.SwiperItemVo;
+import zust.online.crp.entity.vo.*;
 import zust.online.crp.mapper.PostMapper;
 import zust.online.crp.mapper.PostStatisticsInfoMapper;
 import zust.online.crp.service.*;
@@ -49,7 +46,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         // 获取当前用户
         User currentUser = ContextUtil.getCurrentUser();
         // 获取作者信息
-        User author = userService.getById(post.getCreateBy());
+        UserVo author = userService.getById(post.getCreateBy(), detailed);
 
         List<CommentVo> commentVos = null;
         if (detailed) {
