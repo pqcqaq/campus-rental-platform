@@ -38,7 +38,7 @@ public class PostController {
     public Result<PageResult<PostVo>> getPostList(@PathVariable Integer page, @PathVariable Integer size) {
         PageResult<PostVo> postVoPageResult = getPageList(page, size,
                 new LambdaQueryWrapper<Post>()
-                        .orderByDesc(Post::getCreateTime));
+                        .orderByDesc(Post::getCreateTime), false);
         return Result.success(postVoPageResult);
     }
 
@@ -83,7 +83,7 @@ public class PostController {
         PageResult<PostVo> postVoPageResult = getPageList(page, size,
                 new LambdaQueryWrapper<Post>()
                         .eq(Post::getCreateBy, currentUser.getId())
-                        .orderByDesc(Post::getCreateTime));
+                        .orderByDesc(Post::getCreateTime), false);
         return Result.success(postVoPageResult);
     }
 
@@ -102,7 +102,7 @@ public class PostController {
         PageResult<PostVo> postVoPageResult = getPageList(page, size,
                 new LambdaQueryWrapper<Post>()
                         .in(Post::getId, collectPostIds)
-                        .orderByDesc(Post::getCreateTime));
+                        .orderByDesc(Post::getCreateTime), false);
         return Result.success(postVoPageResult);
     }
 
@@ -117,10 +117,18 @@ public class PostController {
         return Result.success(200, "删除成功", "删除成功");
     }
 
-    private PageResult<PostVo> getPageList(int page, int size, LambdaQueryWrapper<Post> lambdaQueryWrapper) {
+    @GetMapping("/{postId}")
+    public Result<PostVo> getPostDetail(@PathVariable Long postId) {
+        log.info("获取帖子详情：{}", postId);
+        Post post = postService.getById(postId);
+        PostVo postVo = postService.transPostToPostVo(post, true);
+        return Result.success(postVo);
+    }
+
+    private PageResult<PostVo> getPageList(int page, int size, LambdaQueryWrapper<Post> lambdaQueryWrapper, boolean detailed) {
         Page<Post> postPage = new Page<>(page, size);
         Page<Post> page1 = postService.page(postPage, lambdaQueryWrapper);
-        List<PostVo> postVoList = postService.transPostListToPostVoList(page1.getRecords());
+        List<PostVo> postVoList = postService.transPostListToPostVoList(page1.getRecords(), detailed);
         PageResult<PostVo> postVoPageResult = new PageResult<>();
         postVoPageResult.setTotal(page1.getTotal());
         postVoPageResult.setPageNum(page1.getCurrent());

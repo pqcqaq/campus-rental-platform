@@ -11,9 +11,9 @@ import java.util.List;
  * @author qcqcqc
  */
 public interface PostService extends IService<Post> {
-    PostVo transPostToPostVo(Post post);
+    PostVo transPostToPostVo(Post post, boolean detailed);
 
-    List<PostVo> transPostListToPostVoList(List<Post> postList);
+    List<PostVo> transPostListToPostVoList(List<Post> postList, boolean detailed);
 
     List<SwiperItemVo> getTopHotPostVos(int topNum);
 

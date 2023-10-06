@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * @author qcqcqc
  */
@@ -23,5 +25,5 @@ public class Comment {
     private Long createBy;
     private String commentDetail;
     @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private String createTime;
+    private LocalDateTime createTime;
 }

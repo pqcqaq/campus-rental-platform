@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import zust.online.crp.entity.po.User;
 import zust.online.crp.utils.ContextUtil;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author qcqcqc
@@ -29,8 +29,8 @@ public class MyBatisMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         // 注意是类属性字段名称，不是表字段名称
-        this.setFieldValByName("createTime", new Date(), metaObject);
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("createTime", LocalDateTime.now(), metaObject);
+        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
 
         // 设置创建人
         this.setFieldValByName("createBy", getUserId(), metaObject);
@@ -42,7 +42,7 @@ public class MyBatisMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         // 注意是类属性字段名称，不是表字段名称
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("updateTime", LocalDateTime.now(), metaObject);
 
         // 设置更新人
         this.setFieldValByName("updateBy", getUserId(), metaObject);

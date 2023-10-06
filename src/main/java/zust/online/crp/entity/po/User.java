@@ -4,14 +4,17 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import zust.online.crp.entity.vo.UserVo;
+import zust.online.crp.serializer.LocalDateTimeSerializer;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -37,7 +40,8 @@ public class User implements Serializable {
     @TableField(value = "roles", typeHandler = JacksonTypeHandler.class)
     private List<String> roles;
     @TableField(value = "create_time", fill = FieldFill.INSERT)
-    private Date createTime;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime createTime;
     private Boolean disabled;
 
     public UserVo toVo(String token) {

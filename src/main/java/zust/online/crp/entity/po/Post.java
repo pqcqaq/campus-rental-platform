@@ -9,10 +9,11 @@ import lombok.NoArgsConstructor;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.Image;
 import zust.online.crp.entity.vo.PostVo;
+import zust.online.crp.utils.TimeFormatterUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -33,9 +34,9 @@ public class Post implements Serializable {
     @TableField(value = "imgs", typeHandler = JacksonTypeHandler.class)
     private List<Long> imgs;
     @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
+    private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
+    private LocalDateTime updateTime;
     @TableField(fill = FieldFill.INSERT)
     private Long createBy;
     private Boolean rented;
@@ -62,8 +63,8 @@ public class Post implements Serializable {
                 .title(this.title)
                 .intro(this.intro)
                 .imgs(imgs)
-                .createTime(this.createTime.toString())
-                .updateTime(this.updateTime.toString())
+                .createTime(TimeFormatterUtils.dateToString(this.createTime))
+                .updateTime(TimeFormatterUtils.dateToString(this.updateTime))
                 .author(author)
                 .likeNum(likeNum)
                 .commentNum(commentNum)

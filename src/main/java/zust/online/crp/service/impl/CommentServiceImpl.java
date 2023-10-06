@@ -9,6 +9,7 @@ import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.mapper.CommentMapper;
 import zust.online.crp.service.CommentService;
 import zust.online.crp.service.UserService;
+import zust.online.crp.utils.TimeFormatterUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         User byId = userService.getById(userId);
         CommentVo commentVo = new CommentVo();
         commentVo.setDetail(comment.getCommentDetail());
-        commentVo.setCreateTime(comment.getCreateTime());
+        commentVo.setCreateTime(TimeFormatterUtils.dateToString(comment.getCreateTime()));
         commentVo.setId(String.valueOf(comment.getId()));
         commentVo.setAuthor(byId);
         return commentVo;

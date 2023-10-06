@@ -117,8 +117,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 从redis中删除
         redisTemplate.delete(token);
         User userLogin = ContextUtil.getCurrentUser();
-        token = jwtUtils.createToken(userLogin);
         UserLogin userLogin1 = new UserLogin(userLogin);
+        token = jwtUtils.createToken(userLogin1);
         redisTemplate.opsForValue().set(token, userLogin1, 7, TimeUnit.DAYS);
         if (userLogin != null) {
             return userLogin.toVo(token);

@@ -45,12 +45,18 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     private PostStatisticsInfoMapper postStatisticsInfoMapper;
 
     @Override
-    public PostVo transPostToPostVo(Post post) {
+    public PostVo transPostToPostVo(Post post, boolean detailed) {
         // 获取当前用户
         User currentUser = ContextUtil.getCurrentUser();
         // 获取作者信息
         User author = userService.getById(post.getCreateBy());
-        List<CommentVo> commentVos = commentService.getCommentVosByPostId(post.getId());
+
+        List<CommentVo> commentVos = null;
+        if (detailed) {
+            // 获取评论信息
+            commentVos = commentService.getCommentVosByPostId(post.getId());
+        }
+        long commentCount = commentService.count(new LambdaQueryWrapper<Comment>().eq(Comment::getPostId, post.getId()));
         // 获取收藏数
         Long collectNum = collectInfoService.getCollectNumsByPostId(post.getId());
         List<Long> imgs = post.getImgs();
@@ -91,8 +97,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
                 commentVos,
                 author,
                 count,
-                (long) commentVos.size(),
-                (long) collectNum.intValue(),
+                commentCount,
+                collectNum,
                 isLike,
                 isCollect,
                 shareRecords.size(),
@@ -103,10 +109,10 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     }
 
     @Override
-    public List<PostVo> transPostListToPostVoList(List<Post> postList) {
+    public List<PostVo> transPostListToPostVoList(List<Post> postList, boolean detailed) {
         ArrayList<PostVo> postVos = new ArrayList<>();
         for (Post post : postList) {
-            PostVo postVo = this.transPostToPostVo(post);
+            PostVo postVo = this.transPostToPostVo(post, detailed);
             postVos.add(postVo);
         }
         return postVos;
