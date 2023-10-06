@@ -46,7 +46,10 @@ public class CollectInfoServiceImpl extends ServiceImpl<CollectInfoMapper, Colle
 
     @Override
     public List<Long> getCollectPostIdsByUserId(Long userId) {
-        List<CollectInfo> list = this.list(new LambdaQueryWrapper<CollectInfo>().eq(CollectInfo::getCreateBy, userId));
+        List<CollectInfo> list = this.list(new LambdaQueryWrapper<CollectInfo>()
+                .eq(CollectInfo::getCreateBy, userId)
+                .orderByDesc(CollectInfo::getCreateTime)
+        );
         return list.stream().map(CollectInfo::getPostId).toList();
     }
 }

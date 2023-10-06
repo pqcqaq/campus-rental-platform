@@ -8,6 +8,7 @@ import zust.online.crp.entity.po.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Collections;
 
 /**
  * @author qcqcqc
@@ -41,6 +42,7 @@ public class UserVo {
                 .mobile(mobile)
                 .nickName(nickName)
                 .school(school)
+                .roles(Collections.singletonList(role))
                 .build();
     }
 }

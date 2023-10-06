@@ -34,6 +34,13 @@ public class PostController {
     @Resource
     private CollectInfoService collectInfoService;
 
+    /**
+     * 首页：获取帖子列表
+     *
+     * @param page 页码
+     * @param size 每页大小
+     * @return 帖子列表
+     */
     @GetMapping("/list/{page}/{size}")
     public Result<PageResult<PostVo>> getPostList(@PathVariable Integer page, @PathVariable Integer size) {
         PageResult<PostVo> postVoPageResult = getPageList(page, size,
@@ -42,6 +49,12 @@ public class PostController {
         return Result.success(postVoPageResult);
     }
 
+    /**
+     * 发布帖子
+     *
+     * @param postVo 帖子信息
+     * @return 结果
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/publish")
     public Result<String> publishPost(@Valid @RequestBody PostVo postVo) {
@@ -51,6 +64,12 @@ public class PostController {
         return Result.success("发布成功");
     }
 
+    /**
+     * 点赞帖子
+     *
+     * @param postId 帖子id
+     * @return 结果
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/like/{postId}")
     public Result<Boolean> likePost(@PathVariable Long postId) {
@@ -62,6 +81,12 @@ public class PostController {
         return Result.success(200, "点赞成功", true);
     }
 
+    /**
+     * 收藏帖子
+     *
+     * @param postId 帖子id
+     * @return 结果
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/collect/{postId}")
     public Result<Boolean> collectPost(@PathVariable Long postId) {
@@ -73,6 +98,13 @@ public class PostController {
         return Result.success(200, "收藏成功", true);
     }
 
+    /**
+     * 获取用户发布的帖子
+     *
+     * @param page 页码
+     * @param size 每页大小
+     * @return 帖子列表
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/publish/{page}/{size}")
     public Result<PageResult<PostVo>> pagePublishPosts(@PathVariable Integer page, @PathVariable Integer size) {
@@ -87,6 +119,13 @@ public class PostController {
         return Result.success(postVoPageResult);
     }
 
+    /**
+     * 获取用户收藏的帖子
+     *
+     * @param page 页码
+     * @param size 每页大小
+     * @return 帖子列表
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/collect/{page}/{size}")
     public Result<PageResult<PostVo>> pageCollectPosts(@PathVariable Integer page, @PathVariable Integer size) {
@@ -103,9 +142,18 @@ public class PostController {
                 new LambdaQueryWrapper<Post>()
                         .in(Post::getId, collectPostIds)
                         .orderByDesc(Post::getCreateTime), false);
+        // 使用收藏的顺序排序
+        List<PostVo> postVos = sortPostVosByIdList(collectPostIds, postVoPageResult.getData());
+        postVoPageResult.setData(postVos);
         return Result.success(postVoPageResult);
     }
 
+    /**
+     * 获取用户点赞的帖子
+     *
+     * @param postId 帖子id
+     * @return 帖子列表
+     */
     @PreAuthorize("hasRole('ROLE_USER')")
     @DeleteMapping("/{postId}")
     public Result<String> delPost(@PathVariable Long postId) {
@@ -117,6 +165,12 @@ public class PostController {
         return Result.success(200, "删除成功", "删除成功");
     }
 
+    /**
+     * 获取帖子详情
+     *
+     * @param postId 帖子id
+     * @return 帖子详情
+     */
     @GetMapping("/{postId}")
     public Result<PostVo> getPostDetail(@PathVariable Long postId) {
         log.info("获取帖子详情：{}", postId);
@@ -125,6 +179,15 @@ public class PostController {
         return Result.success(postVo);
     }
 
+    /**
+     * 获取帖子列表
+     *
+     * @param page               页码
+     * @param size               每页大小
+     * @param lambdaQueryWrapper 查询条件
+     * @param detailed           是否获取详情
+     * @return 帖子列表
+     */
     private PageResult<PostVo> getPageList(int page, int size, LambdaQueryWrapper<Post> lambdaQueryWrapper, boolean detailed) {
         Page<Post> postPage = new Page<>(page, size);
         Page<Post> page1 = postService.page(postPage, lambdaQueryWrapper);
@@ -135,5 +198,17 @@ public class PostController {
         postVoPageResult.setPageSize(page1.getSize());
         postVoPageResult.setData(postVoList);
         return postVoPageResult;
+    }
+
+    private List<PostVo> sortPostVosByIdList(List<Long> ids, List<PostVo> postVos) {
+        PostVo[] postVoArray = new PostVo[postVos.size()];
+        for (PostVo postVo : postVos) {
+            int i = ids.indexOf(Long.parseLong(postVo.getId()));
+            if (i == -1) {
+                continue;
+            }
+            postVoArray[i] = postVo;
+        }
+        return List.of(postVoArray);
     }
 }
