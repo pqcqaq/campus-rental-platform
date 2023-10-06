@@ -31,4 +31,6 @@ public interface UserService extends IService<User> {
     Boolean logout(HttpServletRequest httpServletRequest);
 
     List<UserInfoRecordsVo> getUserInfoRecords();
+
+    String saveBackground(String background);
 }

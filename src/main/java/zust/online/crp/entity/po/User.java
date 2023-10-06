@@ -33,6 +33,7 @@ public class User implements Serializable {
     private String linkMan;
     private String username;
     private String avatar;
+    private String background;
     private String password;
     private String mobile;
     private String nickName;
@@ -49,6 +50,7 @@ public class User implements Serializable {
                 .linkMan(linkMan)
                 .username(username)
                 .avatar(avatar)
+                .background(background)
                 .mobile(mobile)
                 .nickName(nickName)
                 .school(school)

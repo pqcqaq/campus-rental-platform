@@ -1,6 +1,5 @@
 package zust.online.crp.entity.vo;
 
-import com.hanzoy.utils.Token;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +20,7 @@ public class UserVo {
     private String linkMan;
     private String username;
     private String avatar;
+    private String background;
     private String mobile;
     @NotBlank(message = "昵称不为空")
     @Size(min = 1, max = 30, message = "昵称长度为1-30")

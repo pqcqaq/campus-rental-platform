@@ -22,9 +22,9 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         String message = authException.getMessage();
         if (message.contains("失效")) {
-            response.setStatus(402);
+            response.setStatus(ResultCode.BANDED);
         } else {
-            response.setStatus(401);
+            response.setStatus(ResultCode.UNAUTHORIZED);
         }
         String msg = "Authentication failed, unable to access system resources";
         response.setContentType("application/json;charset=UTF-8");

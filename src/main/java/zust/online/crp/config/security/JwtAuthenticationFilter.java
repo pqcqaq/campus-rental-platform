@@ -53,9 +53,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //            return;
 //        }
         if (Objects.isNull(loginUserBo)) {
-            Result<String> error = Result.error(ResultCode.UNAUTHORIZED, "Token has expired, please log in again", null);
+            Result<String> error = Result.error(ResultCode.UNAUTHORIZED, "Token has expired, please log in again", "请重新登录");
             ObjectMapper objectMapper = new ObjectMapper();
             String s = objectMapper.writeValueAsString(error);
+            response.setContentType("application/json;charset=UTF-8");
+            response.getOutputStream().write(s.getBytes());
+            return;
+        }
+        // 如果用户被禁用，则抛出异常
+        if (!loginUserBo.isEnabled()) {
+            Result<String> error = Result.error(ResultCode.BANDED, "用户已被禁用，请联系管理员", null);
+            ObjectMapper objectMapper = new ObjectMapper();
+            String s = objectMapper.writeValueAsString(error);
+            response.setContentType("application/json;charset=UTF-8");
             response.getOutputStream().write(s.getBytes());
             return;
         }

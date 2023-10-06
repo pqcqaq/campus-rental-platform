@@ -51,6 +51,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_USER')")
+    @PostMapping("/saveAlterBackground")
+    public Result<String> saveBackground(@RequestBody String background) {
+        return Result.success("修改成功", userService.saveBackground(background));
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PostMapping("/refreshToken")
     public Result<UserVo> refreshToken(HttpServletRequest httpServletRequest) {
         UserVo userVo = userService.refreshToken(httpServletRequest);

@@ -99,8 +99,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public String saveAlterAvatar(String avatar) {
         // 从上下文中取出用户信息
-        SecurityContext context = SecurityContextHolder.getContext();
-        User userLogin = (User) context.getAuthentication().getPrincipal();
+        User userLogin = ContextUtil.getCurrentUser();
+        if (userLogin == null) {
+            throw new RuntimeException("修改失败");
+        }
         avatar = avatar.substring(1, avatar.length() - 1);
         userLogin.setAvatar(avatar);
         this.updateById(userLogin);
@@ -117,11 +119,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 从redis中删除
         redisTemplate.delete(token);
         User userLogin = ContextUtil.getCurrentUser();
-        UserLogin userLogin1 = new UserLogin(userLogin);
+        Long id = null;
+        if (userLogin != null) {
+            id = userLogin.getId();
+        } else {
+            throw new RuntimeException("刷新失败");
+        }
+        User byId = this.getById(id);
+        UserLogin userLogin1 = new UserLogin(byId);
         token = jwtUtils.createToken(userLogin1);
         redisTemplate.opsForValue().set(token, userLogin1, 7, TimeUnit.DAYS);
-        if (userLogin != null) {
-            return userLogin.toVo(token);
+        if (byId != null) {
+            return byId.toVo(token);
         }
         throw new RuntimeException("刷新失败");
     }
@@ -186,5 +195,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         publish.setValue(count1);
 
         return userInfoRecordsVos;
+    }
+
+    @Override
+    public String saveBackground(String background) {
+        // 从上下文中取出用户信息
+        User userLogin = ContextUtil.getCurrentUser();
+        if (userLogin == null) {
+            throw new RuntimeException("修改失败");
+        }
+        background = background.substring(1, background.length() - 1);
+        userLogin.setBackground(background);
+        this.updateById(userLogin);
+        return "success";
     }
 }
