@@ -219,17 +219,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public UserVo getById(Long userId, boolean detailed) {
         User currentUser = ContextUtil.getCurrentUser();
-        if (currentUser == null) {
-            throw new RuntimeException("用户不存在");
-        }
+
         // 查询当前用户是否关注了该用户
         boolean isSubscribe = false;
-        SubscribeRecord one = subscribeRecordService.getOne(new LambdaQueryWrapper<SubscribeRecord>()
-                .eq(SubscribeRecord::getCreateBy, currentUser.getId())
-                .eq(SubscribeRecord::getPublisherId, userId));
-        if (one != null) {
-            isSubscribe = true;
+        if (currentUser != null) {
+            SubscribeRecord one = subscribeRecordService.getOne(new LambdaQueryWrapper<SubscribeRecord>()
+                    .eq(SubscribeRecord::getCreateBy, currentUser.getId())
+                    .eq(SubscribeRecord::getPublisherId, userId));
+            if (one != null) {
+                isSubscribe = true;
+            }
         }
+
         User user = this.getById(userId);
         if (user == null) {
             throw new RuntimeException("用户不存在");
