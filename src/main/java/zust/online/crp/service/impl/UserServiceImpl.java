@@ -277,4 +277,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return true;
         }
     }
+
+    @Override
+    public List<UserVo> getFansList(Long userId) {
+        List<SubscribeRecord> list = subscribeRecordService.list(new LambdaQueryWrapper<SubscribeRecord>()
+                .eq(SubscribeRecord::getPublisherId, userId)
+                .orderByDesc(SubscribeRecord::getCreateTime)
+        );
+        ArrayList<UserVo> userVos = new ArrayList<>();
+        for (SubscribeRecord subscribeRecord : list) {
+            UserVo byId = this.getById(subscribeRecord.getCreateBy(), false);
+            userVos.add(byId);
+        }
+        return userVos;
+    }
 }

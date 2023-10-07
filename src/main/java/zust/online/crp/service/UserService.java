@@ -37,4 +37,6 @@ public interface UserService extends IService<User> {
     UserVo getById(Long userId, boolean detailed);
 
     boolean follow(Long userId);
+
+    List<UserVo> getFansList(Long userId);
 }

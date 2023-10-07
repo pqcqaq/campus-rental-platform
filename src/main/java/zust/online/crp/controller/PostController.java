@@ -109,15 +109,15 @@ public class PostController {
      * @return 帖子列表
      */
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("/publish/{page}/{size}")
-    public Result<PageResult<PostVo>> pagePublishPosts(@PathVariable Integer page, @PathVariable Integer size) {
+    @GetMapping("/publish/{page}/{size}/{userId}")
+    public Result<PageResult<PostVo>> pagePublishPosts(@PathVariable Integer page, @PathVariable Integer size, @PathVariable Long userId) {
         User currentUser = ContextUtil.getCurrentUser();
         if (currentUser == null) {
             return Result.error(500, "请先登录");
         }
         PageResult<PostVo> postVoPageResult = getPageList(page, size,
                 new LambdaQueryWrapper<Post>()
-                        .eq(Post::getCreateBy, currentUser.getId())
+                        .eq(Post::getCreateBy, userId)
                         .orderByDesc(Post::getCreateTime), false);
         return Result.success(postVoPageResult);
     }
@@ -130,13 +130,13 @@ public class PostController {
      * @return 帖子列表
      */
     @PreAuthorize("hasRole('ROLE_USER')")
-    @GetMapping("/collect/{page}/{size}")
-    public Result<PageResult<PostVo>> pageCollectPosts(@PathVariable Integer page, @PathVariable Integer size) {
+    @GetMapping("/collect/{page}/{size}/{userId}")
+    public Result<PageResult<PostVo>> pageCollectPosts(@PathVariable Integer page, @PathVariable Integer size, @PathVariable Long userId) {
         User currentUser = ContextUtil.getCurrentUser();
         if (currentUser == null) {
             return Result.error(500, "请先登录");
         }
-        List<Long> collectPostIds = collectInfoService.getCollectPostIdsByUserId(currentUser.getId());
+        List<Long> collectPostIds = collectInfoService.getCollectPostIdsByUserId(userId);
         if (collectPostIds.isEmpty()) {
             return Result.success(new PageResult<>());
         }
@@ -203,6 +203,13 @@ public class PostController {
         return postVoPageResult;
     }
 
+    /**
+     * 使用id列表对帖子列表排序
+     *
+     * @param ids     id列表
+     * @param postVos 帖子列表
+     * @return 排序后的帖子列表
+     */
     private List<PostVo> sortPostVosByIdList(List<Long> ids, List<PostVo> postVos) {
         PostVo[] postVoArray = new PostVo[postVos.size()];
         for (PostVo postVo : postVos) {

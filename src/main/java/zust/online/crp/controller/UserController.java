@@ -84,4 +84,9 @@ public class UserController {
     public Result<UserVo> getUserDetails(@PathVariable Long userId) {
         return Result.success(userService.getById(userId, true));
     }
+
+    @GetMapping("/fansList/{userId}")
+    public Result<List<UserVo>> getFansList(@PathVariable Long userId) {
+        return Result.success(userService.getFansList(userId));
+    }
 }

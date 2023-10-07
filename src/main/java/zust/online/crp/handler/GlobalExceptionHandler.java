@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import zust.online.crp.entity.Result;
 import zust.online.crp.exception.ErrorAlterStatusException;
 import zust.online.crp.exception.ErrorFoundUserException;
@@ -70,6 +71,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({ErrorAlterStatusException.class})
     public Result<String> errorAlterStatusExceptionHandler(ErrorAlterStatusException e) {
         return Result.error(400, "修改失败", e.getMessage());
+    }
+
+    /**
+     * MethodArgumentTypeMismatchException
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    public Result<String> methodArgumentTypeMismatchExceptionHandler(MethodArgumentTypeMismatchException e) {
+        return Result.error(400, "参数类型错误", e.getMessage());
     }
 
 }
