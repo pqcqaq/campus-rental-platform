@@ -15,8 +15,20 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PageResult<T> {
+    /**
+     * 当前页码
+     */
     private Long pageNum;
+    /**
+     * 每页数量
+     */
     private Long pageSize;
+    /**
+     * 总条数
+     */
     private Long total;
+    /**
+     * 分页数据
+     */
     private List<T> data;
 }

@@ -1,6 +1,7 @@
 package zust.online.crp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hanzoy.utils.JWTUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import zust.online.crp.entity.PageResult;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.UserLogin;
 import zust.online.crp.entity.dto.LoginParam;
@@ -233,7 +235,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User user = this.getById(userId);
         if (user == null) {
-            throw new RuntimeException("用户不存在");
+            log.error("用户不存在");
+            return null;
         }
         if (!detailed) {
             return user.toVo(null, null, null, isSubscribe);
@@ -279,16 +282,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public List<UserVo> getFansList(Long userId) {
-        List<SubscribeRecord> list = subscribeRecordService.list(new LambdaQueryWrapper<SubscribeRecord>()
+    public PageResult<UserVo> getFansList(Integer page, Integer size, Long userId) {
+        Page<SubscribeRecord> subscribeRecordPage = new Page<>(page, size);
+
+        Page<SubscribeRecord> list = subscribeRecordService.page(subscribeRecordPage, new LambdaQueryWrapper<SubscribeRecord>()
                 .eq(SubscribeRecord::getPublisherId, userId)
                 .orderByDesc(SubscribeRecord::getCreateTime)
         );
+        List<SubscribeRecord> records = list.getRecords();
         ArrayList<UserVo> userVos = new ArrayList<>();
-        for (SubscribeRecord subscribeRecord : list) {
-            UserVo byId = this.getById(subscribeRecord.getCreateBy(), false);
-            userVos.add(byId);
+        for (SubscribeRecord record : records) {
+            UserVo byId = this.getById(record.getCreateBy(), true);
+            if (byId != null) {
+                userVos.add(byId);
+            }
         }
-        return userVos;
+        PageResult<UserVo> userVoPageResult = new PageResult<>();
+        userVoPageResult.setTotal(list.getTotal());
+        userVoPageResult.setPageNum(list.getCurrent());
+        userVoPageResult.setPageSize((long) size);
+        userVoPageResult.setData(userVos);
+        return userVoPageResult;
     }
 }

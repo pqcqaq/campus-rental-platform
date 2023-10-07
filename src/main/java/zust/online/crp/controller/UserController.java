@@ -3,6 +3,7 @@ package zust.online.crp.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import zust.online.crp.entity.PageResult;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.dto.LoginParam;
 import zust.online.crp.entity.vo.UserInfoRecordsVo;
@@ -85,8 +86,9 @@ public class UserController {
         return Result.success(userService.getById(userId, true));
     }
 
-    @GetMapping("/fansList/{userId}")
-    public Result<List<UserVo>> getFansList(@PathVariable Long userId) {
-        return Result.success(userService.getFansList(userId));
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/fansList/{page}/{size}/{userId}")
+    public Result<PageResult<UserVo>> getFansList(@PathVariable Integer page, @PathVariable Integer size, @PathVariable Long userId) {
+        return Result.success(userService.getFansList(page, size, userId));
     }
 }

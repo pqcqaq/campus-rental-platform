@@ -1,6 +1,7 @@
 package zust.online.crp.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import zust.online.crp.entity.PageResult;
 import zust.online.crp.entity.Result;
 import zust.online.crp.entity.dto.LoginParam;
 import zust.online.crp.entity.po.User;
@@ -38,5 +39,5 @@ public interface UserService extends IService<User> {
 
     boolean follow(Long userId);
 
-    List<UserVo> getFansList(Long userId);
+    PageResult<UserVo> getFansList(Integer page, Integer size, Long userId);
 }
