@@ -69,6 +69,7 @@ public class UserController {
         return Result.success(userService.getUserInfoRecords());
     }
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/follow/{userId}")
     public Result<Boolean> follow(@PathVariable Long userId) {
         boolean f = userService.follow(userId);
@@ -76,5 +77,11 @@ public class UserController {
             return Result.success(200, "关注成功", true);
         }
         return Result.success(200, "取消关注成功", false);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @GetMapping("/{userId}")
+    public Result<UserVo> getUserDetails(@PathVariable Long userId) {
+        return Result.success(userService.getById(userId, true));
     }
 }
