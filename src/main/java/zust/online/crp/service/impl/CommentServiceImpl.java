@@ -29,7 +29,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Override
     public List<CommentVo> getCommentVosByPostId(Long postId) {
-        List<Comment> list = this.list(new LambdaQueryWrapper<Comment>().eq(Comment::getPostId, postId));
+        List<Comment> list = this.list(new LambdaQueryWrapper<Comment>()
+                .eq(Comment::getPostId, postId)
+                // parentId为null的是一级评论
+                .isNull(Comment::getParentId)
+                .orderByDesc(Comment::getCreateTime)
+        );
         return this.transCommentListToCommentVoList(list);
     }
 
@@ -38,6 +43,8 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         Page<Comment> commentPage = new Page<>(page, size);
         Page<Comment> page1 = this.page(commentPage, new LambdaQueryWrapper<Comment>()
                 .eq(Comment::getPostId, postId)
+                // parentId为null的是一级评论
+                .isNull(Comment::getParentId)
                 .orderByDesc(Comment::getCreateTime)
         );
         List<CommentVo> commentVos = this.transCommentListToCommentVoList(page1.getRecords());
@@ -49,11 +56,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return commentVoPageResult;
     }
 
-    private List<CommentVo> getCommentsForCommentsByIds(List<Long> ids) {
-        if (ids == null || ids.isEmpty()) {
+    private List<CommentVo> getCommentsForCommentsByParentIds(Long parentId) {
+        if (parentId == null) {
             return new ArrayList<>();
         }
-        List<Comment> list = this.list(new LambdaQueryWrapper<Comment>().in(Comment::getId, ids));
+        List<Comment> list = this.list(new LambdaQueryWrapper<Comment>()
+                .in(Comment::getParentId, parentId)
+                .orderByDesc(Comment::getCreateTime)
+        );
         return this.transCommentListToCommentVoList(list);
     }
 
@@ -68,6 +78,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     private CommentVo transCommentToCommentVo(Comment comment) {
         Long userId = comment.getCreateBy();
         UserVo byId = userService.getById(userId, true);
-        return comment.toVo(byId, getCommentsForCommentsByIds(comment.getCommentsIds()));
+        List<CommentVo> commentsForCommentsByParentIds = getCommentsForCommentsByParentIds(comment.getId());
+        return comment.toVo(byId, commentsForCommentsByParentIds);
     }
 }

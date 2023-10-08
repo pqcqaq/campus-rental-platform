@@ -3,7 +3,6 @@ package zust.online.crp.entity.po;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,8 +28,7 @@ public class Comment {
     @TableField(value = "create_by", fill = FieldFill.INSERT)
     private Long createBy;
     private String commentDetail;
-    @TableField(value = "comment_ids", typeHandler = JacksonTypeHandler.class)
-    private List<Long> commentsIds;
+    private Long parentId;
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
