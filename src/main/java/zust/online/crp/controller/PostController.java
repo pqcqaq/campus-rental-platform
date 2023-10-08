@@ -18,6 +18,7 @@ import zust.online.crp.utils.ContextUtil;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -211,14 +212,15 @@ public class PostController {
      * @return 排序后的帖子列表
      */
     private List<PostVo> sortPostVosByIdList(List<Long> ids, List<PostVo> postVos) {
-        PostVo[] postVoArray = new PostVo[postVos.size()];
-        for (PostVo postVo : postVos) {
-            int i = ids.indexOf(Long.parseLong(postVo.getId()));
-            if (i == -1) {
-                continue;
+        ArrayList<PostVo> postVos1 = new ArrayList<>();
+        // ids中可能存在已经被删除的帖子id，所以只能遍历
+        for (Long id : ids) {
+            for (PostVo postVo : postVos) {
+                if (id.equals(Long.parseLong(postVo.getId()))) {
+                    postVos1.add(postVo);
+                }
             }
-            postVoArray[i] = postVo;
         }
-        return List.of(postVoArray);
+        return postVos1;
     }
 }
