@@ -1,8 +1,10 @@
 package zust.online.crp.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import zust.online.crp.entity.PageResult;
 import zust.online.crp.entity.po.Comment;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.UserVo;
@@ -31,7 +33,26 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         return this.transCommentListToCommentVoList(list);
     }
 
+    @Override
+    public PageResult<CommentVo> pageCommentVosByPostId(Integer page, Integer size, Long postId) {
+        Page<Comment> commentPage = new Page<>(page, size);
+        Page<Comment> page1 = this.page(commentPage, new LambdaQueryWrapper<Comment>()
+                .eq(Comment::getPostId, postId)
+                .orderByDesc(Comment::getCreateTime)
+        );
+        List<CommentVo> commentVos = this.transCommentListToCommentVoList(page1.getRecords());
+        PageResult<CommentVo> commentVoPageResult = new PageResult<>();
+        commentVoPageResult.setTotal(page1.getTotal());
+        commentVoPageResult.setPageNum(page1.getCurrent());
+        commentVoPageResult.setPageSize(Long.valueOf(size));
+        commentVoPageResult.setData(commentVos);
+        return commentVoPageResult;
+    }
+
     private List<CommentVo> getCommentsForCommentsByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return new ArrayList<>();
+        }
         List<Comment> list = this.list(new LambdaQueryWrapper<Comment>().in(Comment::getId, ids));
         return this.transCommentListToCommentVoList(list);
     }

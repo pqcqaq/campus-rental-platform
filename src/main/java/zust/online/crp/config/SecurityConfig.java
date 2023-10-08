@@ -118,6 +118,7 @@ public class SecurityConfig {
                                 .antMatchers("/common/**").permitAll()
                                 .antMatchers("/posts/list/**").permitAll()
                                 .antMatchers("/posts/*").permitAll()
+                                .antMatchers("/comments/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors().configurationSource(corsConfigurationSource())

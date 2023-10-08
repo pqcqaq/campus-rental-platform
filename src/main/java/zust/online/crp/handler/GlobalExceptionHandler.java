@@ -1,7 +1,9 @@
 package zust.online.crp.handler;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -14,6 +16,7 @@ import zust.online.crp.entity.Result;
 import zust.online.crp.exception.ErrorAlterStatusException;
 import zust.online.crp.exception.ErrorFoundUserException;
 
+import java.sql.SQLSyntaxErrorException;
 import java.util.List;
 
 /**
@@ -22,6 +25,7 @@ import java.util.List;
  * @author qcqcqc
  */
 @RestControllerAdvice
+@Order(1)
 public class GlobalExceptionHandler {
     /**
      * MethodArgumentNotValidException
@@ -82,4 +86,21 @@ public class GlobalExceptionHandler {
         return Result.error(400, "参数类型错误", e.getMessage());
     }
 
+    /**
+     * SQLSyntaxErrorException
+     */
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({SQLSyntaxErrorException.class})
+    public Result<String> sqlSyntaxErrorException(SQLSyntaxErrorException e) {
+        return Result.error(400, "服务器内部错误！", e.getMessage());
+    }
+
+    /**
+     * BadCredentialsException
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler({BadCredentialsException.class})
+    public Result<String> badCredentialsExceptionHandler(BadCredentialsException e) {
+        return Result.error(400, "用户名或密码错误！", e.getMessage());
+    }
 }
