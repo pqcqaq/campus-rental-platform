@@ -212,15 +212,15 @@ public class PostController {
      * @return 排序后的帖子列表
      */
     private List<PostVo> sortPostVosByIdList(List<Long> ids, List<PostVo> postVos) {
-        ArrayList<PostVo> postVos1 = new ArrayList<>();
+        ArrayList<PostVo> orderedPostVos = new ArrayList<>();
         // ids中可能存在已经被删除的帖子id，所以只能遍历
         for (Long id : ids) {
             for (PostVo postVo : postVos) {
                 if (id.equals(Long.parseLong(postVo.getId()))) {
-                    postVos1.add(postVo);
+                    orderedPostVos.add(postVo);
                 }
             }
         }
-        return postVos1;
+        return orderedPostVos;
     }
 }
