@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import zust.online.crp.entity.PageResult;
+import zust.online.crp.entity.dto.CommentParam;
 import zust.online.crp.entity.po.Comment;
 import zust.online.crp.entity.vo.CommentVo;
 import zust.online.crp.entity.vo.UserVo;
@@ -54,6 +55,21 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         commentVoPageResult.setPageSize(Long.valueOf(size));
         commentVoPageResult.setData(commentVos);
         return commentVoPageResult;
+    }
+
+    /**
+     * 发布评论
+     * @param commentParam 评论信息
+     * @return 评论信息
+     */
+    @Override
+    public CommentVo publishComment(CommentParam commentParam) {
+        Comment comment = new Comment();
+        comment.setCommentDetail(commentParam.getCommentDetail());
+        comment.setPostId(Long.valueOf(commentParam.getPostId()));
+        comment.setParentId(Long.valueOf(commentParam.getParentId()));
+        this.save(comment);
+        return this.transCommentToCommentVo(comment);
     }
 
     private List<CommentVo> getCommentsForCommentsByParentIds(Long parentId) {
